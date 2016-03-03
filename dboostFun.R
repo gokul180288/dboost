@@ -25,7 +25,7 @@ trainY = as.matrix(train$revenue)
 
 
 
-dBoost = function(trainX,trainY,testX,COLN=25,ROWN=22,step0=0.0038,lambda0=0.88,crossNum=7) {
+dBoost = function(trainX,trainY,testX,COLN=25,ROWN=22,ntrees=4100,step0=0.0038,lambda0=0.88,crossNum=7) {
   mmrows = nrow(testX)
   mrows = nrow(trainX)
   mcols = ncol(trainX)
@@ -36,7 +36,7 @@ dBoost = function(trainX,trainY,testX,COLN=25,ROWN=22,step0=0.0038,lambda0=0.88,
 
   #COLN = 25#40
   #ROWN = 22#100
-  for (j in 1:4100) {
+  for (j in 1:ntrees) {
     tmpR = sample(mrows,replace=T)[1:ROWN]
     tmpC = sample(mcols,replace=T)[1:COLN]
     tmpY = trainY[tmpR] - preds[tmpR]
