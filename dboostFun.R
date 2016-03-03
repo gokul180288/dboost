@@ -25,13 +25,15 @@ trainY = as.matrix(train$revenue)
 
 
 
-dBoost = function(trainX,trainY,testX,COLN=25,ROWN=22,step0=0.0038,lambda0=0.88,crossNum=7) { 
-  preds = rep(0,nrow(trainX))
-  testpreds = rep(0,nrow(testX))
+dBoost = function(trainX,trainY,testX,COLN=25,ROWN=22,step0=0.0038,lambda0=0.88,crossNum=7) {
   mmrows = nrow(testX)
-  modelList = list()
   mrows = nrow(trainX)
   mcols = ncol(trainX)
+  
+  preds = rep(0,mrows)
+  testpreds = rep(0,mmrows)
+  #modelList = list()
+
   #COLN = 25#40
   #ROWN = 22#100
   for (j in 1:4100) {
@@ -40,9 +42,9 @@ dBoost = function(trainX,trainY,testX,COLN=25,ROWN=22,step0=0.0038,lambda0=0.88,
     tmpY = trainY[tmpR] - preds[tmpR]
     tmpX = trainX[tmpR,]
     tmpX = tmpX[,tmpC]
-    tmpX0 = tmpX
     tmpXX = trainX[,tmpC]
     testXX = testX[,tmpC]
+    tmpX0 = tmpX
     tmpXX0 = tmpXX
     testXX0 = testXX
     for (k in 1:COLN) {
