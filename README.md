@@ -1,4 +1,5 @@
 # dboost
+Stochastic Dummy Boosting
+Michael S Kim (03/03/2016)
 
-Stocastic Dummy Boosting:
-I randomly create dummy variables by randomly splitting column features. It's basically a stump. Then I do Ridge regression which is my weak learner for boosting. Then it's just GBM from there.
+I randomly create dummy variables by randomly splitting column features. This is basically like a decision stump. Then I do Ridge regression which is my weak learner for boosting. Then it's just GBM from there.
