@@ -1,14 +1,10 @@
-
 require(glmnet)
-require(randomForest)
+#require(randomForest)
 require(data.table)
 set.seed(3)
 train = fread('/home/mikeskim/Desktop/tfiAlgo/train.csv',data.table=F)
-
-removeDups = function(x) {
-  tmpi = apply(x,2,function(x) length(unique(x)))
-  return(as.matrix(x[,tmpi>1]))
-}
+#download train data at https://www.kaggle.com/c/restaurant-revenue-prediction/data
+#License GPL-2 as it depends on glmnet
 
 train$Id=NULL
 train$`Open Date`=NULL
