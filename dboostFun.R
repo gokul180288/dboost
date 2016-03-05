@@ -34,7 +34,7 @@ trainY = as.matrix(train$revenue)
 
 
 
-dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,lambda0=0.88,crossNum=7,uni=F) {
+dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,lambda0=0.9,crossNum=7,uni=F) {
   mmrows = nrow(testX)
   mrows = nrow(trainX)
   mcols = ncol(trainX)
@@ -111,5 +111,5 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,l
 tmpP = dBoost(trainX,trainY,testX)
 #mean(abs(trainY-preds))
 mean(abs(testY-tmpP))
-#   0.3408112
+#    0.3408058
 #comparable to rf.... sometimes.
