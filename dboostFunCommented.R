@@ -58,9 +58,14 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=3000,step0=0.0038,l
   
   #This is the main boosting loop that repeats to ensemble the weak learners (ridge regression models)
   for (j in 1:ntrees) {
+    #This is stochastic boosting, so resampling with replacement from columns and rows.
     tmpR = sample(mrows,replace=T)[1:ROWN]
     tmpC = sample(mcols,replace=T)[1:COLN]
+    
+    #You are training on (updated) residuals
     tmpY = trainY[tmpR] - preds[tmpR]
+    
+    #Setup some matrices required for training and testing at step j.
     tmpX = trainX[tmpR,]
     tmpX = tmpX[,tmpC]
     tmpXX = trainX[,tmpC]
@@ -91,15 +96,15 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=3000,step0=0.0038,l
       tmpA = rep(0, mmrows)
       tmpA[testXX[,k]>cutoff]=1
       testXX[,k] = tmpA
-    }
-
-      #Train weak learner via glmnet uses only subset of rows and columns (each column is dummied so contains only 0 or 1)
-      modelx = glmnet(x=tmpX,y=tmpY,family="gaussian",alpha=0,lambda=lambda0)
+    } #End dummy variable making loop
+    
+    #Train weak learner via glmnet uses only subset of rows and columns (each column is dummied so contains only 0 or 1)
+    modelx = glmnet(x=tmpX,y=tmpY,family="gaussian",alpha=0,lambda=lambda0)
       
-      #Make predictions scaled via step0 (for both train and test) 
-      preds = preds + step0*predict(modelx,tmpXX)
-      testpreds = testpreds + step0*predict(modelx,testXX)
-  }
+    #Make predictions scaled via step0 (for both train and test) 
+    preds = preds + step0*predict(modelx,tmpXX)
+    testpreds = testpreds + step0*predict(modelx,testXX)
+  }#End boosting loop ensembling weak learners
   
   return(testpreds)
 }
