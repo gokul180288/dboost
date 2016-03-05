@@ -80,7 +80,9 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=3000,step0=0.0038,l
       #Replace original variable with dummy variable (only for this j iteration / weak learner)
       tmpX[,k] = tmpA
       
-      #Repeat above using all of train - above only uses subset of training rows.
+      #Repeat above steps using all of train - above only uses resampled subset of training rows.
+      #So your model j's training is done above (trained on subset),
+      #but your model j's prediction on train is applied on all training data. 
       tmpA = rep(0, mrows)
       tmpA[tmpXX[,k]>cutoff]=1 
       tmpXX[,k] = tmpA
