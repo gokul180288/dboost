@@ -6,9 +6,9 @@ train = fread('/home/mikeskim/Desktop/tfiAlgo/train.csv',data.table=F)
 #download train data at https://www.kaggle.com/c/restaurant-revenue-prediction/data
 #License GPL-2 as it depends on glmnet
 
-hashfun = function(x,seedj,bool1) {
+hashfun = function(x,seedj,bool1,gseed) {
   if (bool1) {
-    set.seed(seedj)
+    set.seed(seedj+(gseed*999999))
     return((x*runif(1))%%1)
   }
   else {
@@ -44,7 +44,7 @@ trainY = as.matrix(train$revenue)
 
 
 
-dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,lambda0=0.9,crossNum=7,uni=F,hashB=T) {
+dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,lambda0=0.9,crossNum=7,uni=F,hashB=T,gseed=6) {
   mmrows = nrow(testX)
   mrows = nrow(trainX)
   mcols = ncol(trainX)
@@ -69,18 +69,18 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,l
 
     for (k in 1:COLN) {
       tmpA = rep(0, ROWN)
-      tmpX[,k] = hashfun(tmpX[,k],j,hashB)
+      tmpX[,k] = hashfun(tmpX[,k],j,hashB,gseed)
       cutoff = sample(x=unique1(tmpX[,k],uni),size=1)
       tmpA[tmpX[,k]>cutoff]=1
       tmpX[,k] = tmpA
       
       tmpA = rep(0, mrows)
-      tmpXX[,k] = hashfun(tmpXX[,k],j,hashB)
+      tmpXX[,k] = hashfun(tmpXX[,k],j,hashB,gseed)
       tmpA[tmpXX[,k]>cutoff]=1 
       tmpXX[,k] = tmpA
       
       tmpA = rep(0, mmrows)
-      testXX[,k] = hashfun(testXX[,k],j,hashB)
+      testXX[,k] = hashfun(testXX[,k],j,hashB,gseed)
       tmpA[testXX[,k]>cutoff]=1
       testXX[,k] = tmpA
     }
@@ -125,6 +125,6 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,l
 tmpP = dBoost(trainX,trainY,testX)
 #mean(abs(trainY-preds))
 mean(abs(testY-tmpP))
-#0.3386238 with hash
-#    0.3408058 without hash
+#0.338174 with hash
+#0.3408058 without hash
 #comparable to rf.... sometimes.
