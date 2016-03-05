@@ -107,7 +107,7 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=3000,step0=0.0038,l
   }#End boosting loop ensembling weak learners
   
   return(testpreds)
-}
+}#End dboost function, this is like 30 lines of code without comments.
 
 #Predict on test set using training input data
 tmpP = dBoost(trainX,trainY,testX)
