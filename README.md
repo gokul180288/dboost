@@ -3,7 +3,9 @@ Stochastic Dummy Boosting
 
 Michael S Kim (03/03/2016)
 
-I randomly create dummy variables by randomly splitting column features. This is basically like a decision stump. Then I do Ridge regression which is my weak learner for boosting. Then it's just GBM from there.
+I randomly create dummy variables by randomly splitting column features. This is basically like a decision stump - so a threshold. I give an option to hash a column's values before thresholding to prevent only splitting based upon numerical face value rank. Then I do ridge regression which is my weak learner for boosting. Then it's just GBM from there.
+
+The intuition behind this method is that I have not been able to boost strong learners very well. Hence I looked towards a diverse set of uncorrelated weak learners. That is why you see random dummy variables and ridge regression. This method also happens to be very fast in theory (you can use online ridge, unsecure hashing should be fast, etc.). 
 
 Read the dboostFunCommented.R for the easy version of the code without some features. The other code dboostFun.R adds a few features that improves my cross validated scores in my local experiments. 
 
