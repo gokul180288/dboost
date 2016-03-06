@@ -9,4 +9,4 @@ Read the dboostFunCommented.R for the easy version of the code without some feat
 
 In my very limited local testing, the tuned dboost should get scores around untuned random forest. This may not hold in general, but this (hopefully new) meta algorithm is promising.
 
-In my Kaggle experiences it's basically XG or NN or RF as the best level 1 algorithm. I usually try every algorithm on Caret and the results are subpar. If dboost ends up at the level of RF (on even a subset of Kaggle problems), the double bagged version / meta bagging version of XG+DB/NN should produce top 10 results.
+In my Kaggle experiences it's basically XG >= NN > RF as the best level 1 algorithm. I usually try every algorithm on Caret and the results are subpar. If dboost ends up at the level of RF (on even a subset of Kaggle problems), the double bagged version / meta bagging version of XG+DB/NN should produce top 10 results. Again more testing is required.
