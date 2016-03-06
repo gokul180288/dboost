@@ -1,3 +1,5 @@
+#See dboostFunCommented.R for readable, commented, simpler code.
+#This dboostFun.R is a work in progress with various experimental features.
 require(glmnet)
 #require(randomForest)
 require(data.table)
@@ -44,7 +46,7 @@ trainY = as.matrix(train$revenue)
 
 
 
-dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,lambda0=0.9,crossNum=7,uni=F,hashB=T,gseed=6) {
+dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,lambda0=0.3,crossNum=7,uni=T,hashB=T,gseed=6) {
   mmrows = nrow(testX)
   mrows = nrow(trainX)
   mcols = ncol(trainX)
@@ -125,6 +127,9 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,l
 tmpP = dBoost(trainX,trainY,testX)
 #mean(abs(trainY-preds))
 mean(abs(testY-tmpP))
+#  0.3338347
+# 0.3350612 (better than some rf runs...  tuned dboost>>>untuned rf???)
+# 0.3380544 hash uni=T
 #0.338174 with hash
 #0.3408058 without hash
 #comparable to rf.... sometimes.
