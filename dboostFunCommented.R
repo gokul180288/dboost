@@ -3,6 +3,7 @@
 #License GPL-2 as it depends on glmnet
 #Simpler and easier to understand version of dboost with comments.
 #Some code is taken out to make it easier to read.
+#See dboostFun.R for a more complete version that gives better CV scores.
 
 #Write some helper functions to use later
 unique1 = function(x,bool1) {
@@ -79,7 +80,7 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=3000,step0=0.0038,l
       #Randomly select a cutoff from the original variable. This is fixed for this j iteration
       cutoff = sample(x=unique1(tmpX[,k],uni),size=1)
       
-      #Fill the dummy variable with 1s if the original variable is greater than random cutoff.
+      #Fill the dummy variable with 1s on indices the original variable is greater than random cutoff.
       tmpA[tmpX[,k]>cutoff]=1
       
       #Replace original variable with dummy variable (only for this j iteration / weak learner)
