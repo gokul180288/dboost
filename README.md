@@ -1,4 +1,4 @@
-# dboost
+# dboost: powered by OVER 9000 reg monkeys
 Stochastic Dummy Boosting
 
 Michael S Kim (03/03/2016)
