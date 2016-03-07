@@ -11,11 +11,17 @@ This is not random tree embedding and then xgblinear. It is not feature engineer
 
 Each iteration of dboost will have a very different dummy encoding and the resulting learner will be very weak because it is random. Think of all the possible ways you can dummy just one feature column with three distinct values of 3,4,5. You can dummy as
 3 is one else zero dummy
+
 4 ''
+
 5 ''
+
 3,4 ''
+
 4,5 ''
+
 3,5 ''
+
 And that is just one sample column with 3 distinct values. You could have a column with thousands of possible distinct values very easily. You could have many columns. The possible ways to dummy are really in practice endless. 
 
 The intuition behind this method is that I have not been able to boost strong learners very well. Hence I looked towards a diverse set of uncorrelated weak learners. That is why you see random dummy variables and ridge regression. This method also happens to be very fast in theory (you can use online ridge, unsecure hashing should be fast, etc.). 
