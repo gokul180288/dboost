@@ -7,6 +7,17 @@ The base algorithm is about 30 lines of code (when you take out the comments). I
 
 I randomly create dummy variables by randomly splitting column features. This is basically like a decision stump - so a threshold. I give an option to hash a column's values before thresholding to prevent only splitting based upon numerical face value rank. Then I do ridge regression which is my weak learner for boosting. Then it's just GBM from there.
 
+This is not random tree embedding and then xgblinear. It is not feature engineering and then GBM. The space of all possible dummy encodings across all possible columns is not something one can list out in practice. 
+
+Each iteration of dboost will have a very different dummy encoding and the resulting learner will be very weak because it is random. Think of all the possible ways you can dummy just one feature column with three distinct values of 3,4,5. You can dummy as
+3 is one else zero dummy
+4 ''
+5 ''
+3,4 ''
+4,5 ''
+3,5 ''
+And that is just one sample column with 3 distinct values. You could have a column with thousands of possible distinct values very easily. You could have many columns. The possible ways to dummy are really in practice endless. 
+
 The intuition behind this method is that I have not been able to boost strong learners very well. Hence I looked towards a diverse set of uncorrelated weak learners. That is why you see random dummy variables and ridge regression. This method also happens to be very fast in theory (you can use online ridge, unsecure hashing should be fast, etc.). 
 
 Read the dboostFunCommented.R for the easy version of the code without some features. The other code dboostFun.R adds a few features that improves my cross validated scores in my local experiments. 
