@@ -9,7 +9,10 @@ I randomly create dummy variables by randomly splitting column features. This is
 
 This is not random tree embedding and then xgblinear. It is not feature engineering and then GBM. The space of all possible dummy encodings across all possible columns is not something one can list out in practice. 
 
-Each iteration of dboost will have a very different dummy encoding and the resulting learner will be very weak because it is random. Think of all the possible ways you can dummy just one feature column with three distinct values of 3,4,5. You can dummy as
+# Each iteration of dboost will have a very different dummy encoding and the resulting learner will be very weak because it is random. 
+
+Think of all the possible ways you can dummy just one feature column with three distinct values of 3,4,5. You can dummy as
+
 3 is one else zero dummy
 
 4 ''
