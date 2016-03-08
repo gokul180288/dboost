@@ -1,6 +1,7 @@
 #See dboostFunCommented.R for readable, commented, simpler code.
 #This dboostFun.R is a work in progress with various experimental features.
 require(glmnet)
+require(freestats)
 #require(randomForest)
 require(data.table)
 set.seed(3)
@@ -46,7 +47,7 @@ trainY = as.matrix(train$revenue)
 
 
 
-dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,lambda0=0.3,crossNum=7,uni=T,hashB=T,gseed=6) {
+dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=9900,step0=0.0038,lambda0=0.3,crossNum=7,uni=T,hashB=T,gseed=6) {
   mmrows = nrow(testX)
   mrows = nrow(trainX)
   mcols = ncol(trainX)
@@ -68,11 +69,13 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,l
     tmpX0 = tmpX
     tmpXX0 = tmpXX
     testXX0 = testXX
-    
+
     for (k in 1:COLN) {
       tmpA = rep(0, ROWN)
       tmpX[,k] = hashfun(tmpX[,k],j,hashB,gseed)
-      cutoff = sample(x=unique1(tmpX[,k],uni),size=1)
+      tmpS = rep(-1,length(tmpY)); tmpM = quantile(tmpY,runif(1,0.2,0.8)); tmpS[tmpY>tmpM]=1
+      cutoff = decisionStump(X=tmpX,w=1/(tmpY^2),y=tmpS)$theta
+      #cutoff = sample(x=unique1(tmpX[,k],uni),size=1)
       tmpA[tmpX[,k]>cutoff]=1
       tmpX[,k] = tmpA
       
@@ -86,7 +89,7 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,l
       tmpA[testXX[,k]>cutoff]=1
       testXX[,k] = tmpA
     }
-    
+
     for (k in 1:crossNum) {
       k1 = sample(1:COLN,size=1)
       k2 = sample(1:COLN,size=1)
@@ -117,6 +120,9 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,l
       modelx = glmnet(x=tmpX,y=tmpY,family="gaussian",alpha=0,lambda=lambda0)
       preds = preds + step0*predict(modelx,tmpXX)
       testpreds = testpreds + step0*predict(modelx,testXX)
+      if (j %%100==0) {
+        print(mean(abs(testY-testpreds)))
+      }
     }
   }
   
@@ -127,6 +133,7 @@ dBoost = function(trainX,trainY,testX,COLN=24,ROWN=22,ntrees=4300,step0=0.0038,l
 tmpP = dBoost(trainX,trainY,testX)
 #mean(abs(trainY-preds))
 mean(abs(testY-tmpP))
+#[1] 0.3394888
 #  0.3338347
 # 0.3350612 (better than some rf runs...  tuned dboost>>>untuned rf???)
 # 0.3380544 hash uni=T
