@@ -1,10 +1,10 @@
 #See dboostFunCommented.R for readable, commented, simpler code.
 #This dboostFun.R is a work in progress with various experimental features.
 require(glmnet)
-require(freestats)
+#require(freestats)
 #require(randomForest)
 require(data.table)
-set.seed(3)
+set.seed(1)
 train = fread('/home/mikeskim/Desktop/tfiAlgo/train.csv',data.table=F)
 #download train data at https://www.kaggle.com/c/restaurant-revenue-prediction/data
 #License GPL-2 as it depends on glmnet
@@ -47,7 +47,7 @@ trainY = as.matrix(train$revenue)
 
 
 
-dBoost = function(trainX,trainY,testX,COLN=40,ROWN=100,ntrees=3000,step0=0.0038,lambda0=0.4,lambda1=0.3,crossNum=7,uni=T,hashB=T,gseed=6) {
+dBoost = function(trainX,trainY,testX,COLN=40,ROWN=100,ntrees=50,step0=0.0038,lambda0=0.4,lambda1=0.2,crossNum=7,uni=T,hashB=T,gseed=6) {
   mmrows = nrow(testX)
   mrows = nrow(trainX)
   mcols = ncol(trainX)
@@ -73,10 +73,10 @@ dBoost = function(trainX,trainY,testX,COLN=40,ROWN=100,ntrees=3000,step0=0.0038,
     for (k in 1:COLN) {
       tmpA = rep(0, ROWN)
       tmpX[,k] = hashfun(tmpX[,k],j,hashB,gseed)
-      tmpS = rep(-1,length(tmpY)); tmpM = quantile(tmpY,runif(1,0.2,0.8)); tmpS[tmpY>tmpM]=1
+      #tmpS = rep(-1,length(tmpY)); tmpM = quantile(tmpY,runif(1,0.15,0.85)); tmpS[tmpY>tmpM]=1
       #cutoff = decisionStump(X=tmpX,w=1/(tmpY^2),y=tmpS)$theta
-      cutoff = decisionStump(X=tmpX,w=1,y=tmpS)$theta
-      #cutoff = sample(x=unique1(tmpX[,k],uni),size=1)
+      #cutoff = decisionStump(X=tmpX,w=rep(1,length(tmpS)),y=tmpS)$theta
+      cutoff = sample(x=unique1(tmpX[,k],uni),size=1)
       tmpA[tmpX[,k]>cutoff]=1
       tmpX[,k] = tmpA
       
@@ -91,16 +91,36 @@ dBoost = function(trainX,trainY,testX,COLN=40,ROWN=100,ntrees=3000,step0=0.0038,
       testXX[,k] = tmpA
     }
 
+    for (k in 1:crossNum) {
+      k1 = sample(1:COLN,size=1)
+      k2 = sample(1:COLN,size=1)
+      tmpA = rep(0, ROWN)
+      combined = tmpX0[,k1]*tmpX0[,k2]
+      cutoff = sample(x=unique1(combined,uni),size=1)
+      tmpA[combined>cutoff]=1
+      tmpX = cbind(tmpX, tmpA)
+      
+      tmpA = rep(0, mrows)
+      combined = tmpXX0[,k1]*tmpXX0[,k2]
+      tmpA[combined>cutoff]=1
+      tmpXX = cbind(tmpXX, tmpA)
+      
+      tmpA = rep(0, mmrows)
+      combined = testXX0[,k1]*testXX0[,k2]
+      tmpA[combined>cutoff]=1
+      testXX = cbind(testXX, tmpA)
+    }
 
     
 
       modelx = glmnet(x=tmpX,y=tmpY,family="gaussian",alpha=0,lambda=lambda0)
       preds = cbind(preds,predict(modelx,tmpXX))
       testpreds = cbind(testpreds, predict(modelx,testXX))
-      if (j %%100==0) {
+      if (j %%3==0) {
         modelx = glmnet(x=preds,y=trainY,family="gaussian",alpha=0,lambda=lambda1)
         tmpP = predict(modelx,testpreds)
         print(mean(abs(testY-tmpP)))
+        #print(mean(abs(testY-apply(testpreds,1,mean))))
       }
     
   }
@@ -111,13 +131,27 @@ dBoost = function(trainX,trainY,testX,COLN=40,ROWN=100,ntrees=3000,step0=0.0038,
 
 tmpP = dBoost(trainX,trainY,testX)
 #mean(abs(trainY-preds))
-mean(abs(testY-tmpP))
+#mean(abs(testY-tmpP))
 
 "
-[1] 0.3604033
-[1] 0.3412676
-[1] 0.3365881
-[1] 0.3334866
+COLN=40,ROWN=100,ntrees=50,step0=0.0038,lambda0=0.2,lambda1=0.35,crossNum=8,uni=T,hashB=T,gseed=6
+[1] 0.3505081
+[1] 0.300838
+[1] 0.3160683
+[1] 0.3303783
+[1] 0.3194279
+[1] 0.286952
+[1] 0.2843058
+[1] 0.2837281
+[1] 0.27747
+[1] 0.2778305
+[1] 0.2782543
+[1] 0.2785709
+[1] 0.2751876
+[1] 0.27808
+[1] 0.2752973
+[1] 0.2764192
+really easy to overfit even local cv... need large train.
 "
 
 #[1] 0.3394888
